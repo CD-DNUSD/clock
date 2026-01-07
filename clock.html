@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Digital Clock Signage</title>
+
+<style>
+  :root {
+    --bg: #050A14;
+    --blue: #3855d3; /* Requested blue */
+    --text: #FFFFFF;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 2640px;
+    height: 680px;
+    background: radial-gradient(
+      1400px 680px at center,
+      rgba(56,85,211,0.30),
+      var(--bg) 60%
+    );
+    overflow: hidden;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  }
+
+  body {
+    display: grid;
+    place-items: center;
+  }
+
+  .clock {
+    display: flex;
+    align-items: baseline;
+    gap: 36px;
+    color: var(--text);
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+  }
+
+  .time {
+    font-size: 260px;
+    line-height: 1;
+    text-shadow:
+      0 12px 34px rgba(0,0,0,0.65),
+      0 0 40px rgba(56,85,211,0.35);
+  }
+
+  .ampm {
+    font-size: 90px;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.92);
+    transform: translateY(-22px);
+  }
+
+  /* Accessibility: respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
+  /* Scale gracefully if signage ignores fixed resolution */
+  @media (max-width: 2640px) {
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+  }
+</style>
+</head>
+
+<body>
+  <div class="clock" role="timer" aria-live="polite">
+    <div class="time" id="time">--:--</div>
+    <div class="ampm" id="ampm">--</div>
+  </div>
+
+<script>
+(function () {
+  function pad(n) {
+    return String(n).padStart(2, '0');
+  }
+
+  function updateClock() {
+    const now = new Date();
+    let hours = now.getHours();
+    const minutes = now.getMinutes();
+
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours === 0 ? 12 : hours;
+
+    document.getElementById('time').textContent =
+      `${pad(hours)}:${pad(minutes)}`;
+    document.getElementById('ampm').textContent = ampm;
+
+    setTimeout(updateClock, 1000 - now.getMilliseconds());
+  }
+
+  updateClock();
+})();
+</script>
+</body>
+</html>
